@@ -89,12 +89,12 @@ jobs:
       - name: 새로운 작업 정의 등록
         id: register_task_definition
         run: |
-           TASK_DEF_ARN=$(aws ecs register-task-definition \
-             --cli-input-json file://task-def.rendered.json \
-             --query 'taskDefinition.taskDefinitionArn' \
-             --output text)
-        
-            echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://task-def.rendered.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
       # 12) ECS 서비스 업데이트 (새 작업 정의 강제 배포)
       - name: ECS 서비스 업데이트
@@ -102,9 +102,8 @@ jobs:
           aws ecs update-service \
             --cluster ${{ secrets.ECS_CLUSTER }} \
             --service ${{ secrets.ECS_SERVICE }} \
-            --task-definition &TASK_DEF_ARN \
+            --task-definition $TASK_DEF_ARN \
             --force-new-deployment
-
 #      # 13) 배포 완료 대기 (서비스가 안정 상태가 될 때까지)
 #      - name: ECS 배포 완료 대기
 #        run: |
